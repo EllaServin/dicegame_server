@@ -1,11 +1,18 @@
 input.onButtonPressed(Button.A, function () {
-    player_data = []
+    if (stage == 0 && players.length > 1) {
+        stage = 1
+        player_data = []
+        numberOfPlayersInRound = players.length
+        radio.sendString("ROLL")
+        while (numberOfPlayersInRound != player_data.length) {
+            basic.showIcon(IconNames.SmallDiamond)
+        }
+    }
 })
 function getHighestNumber () {
     highestNumber = 0
     for (let value of player_data) {
         siffra = parseFloat(value.substr(1, 2))
-        val = value.substr(0, 1)
         if (siffra > highestNumber) {
             highestNumber = siffra
         }
@@ -22,22 +29,23 @@ radio.onReceivedString(function (receivedString) {
             player_data.push("" + receivedString + radio.receivedPacket(RadioPacketProperty.SerialNumber))
         }
         if (players.length == player_data.length) {
-        	
+            serialNumber = getHighestNumber()
+            countPoints()
+            basic.pause(2000)
+            stage = 0
         }
     }
+})
+function countPoints () {
     for (let value of player_data) {
         val = value.substr(0, 1)
         siffra = parseFloat(value.substr(1, 2))
-        highestNumber = 0
         if (siffra == highestNumber && val == "A" || siffra < highestNumber && val == "B") {
             radio.sendString("POINT" + parseFloat(value.substr(2, value.length - -2)))
         } else {
             radio.sendString("NOTPOINT" + parseFloat(value.substr(2, value.length - -2)))
         }
     }
-})
-function countPoints () {
-	
 }
 function serialNumberAlreadyExistsInPlayerData (serialNumber: number) {
     for (let value of player_data) {
@@ -48,8 +56,10 @@ function serialNumberAlreadyExistsInPlayerData (serialNumber: number) {
     return false
 }
 let val = ""
+let serialNumber = 0
 let siffra = 0
 let highestNumber = 0
+let numberOfPlayersInRound = 0
 let player_data: string[] = []
 let players: number[] = []
 let stage = 0
@@ -57,5 +67,9 @@ radio.setGroup(33)
 stage = 0
 players = []
 basic.forever(function () {
-    basic.showNumber(players.length)
+    while (stage == 0) {
+        for (let index = 0; index <= players.length - 1; index++) {
+            led.plot(index, 0)
+        }
+    }
 })
