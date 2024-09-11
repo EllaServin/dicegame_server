@@ -1,3 +1,6 @@
+function getSerialNumberFromPlayerData (playerDataValue: string) {
+    return parseFloat(playerDataValue.substr(2, playerDataValue.length - -2))
+}
 input.onButtonPressed(Button.A, function () {
     if (stage == 0 && players.length > 1) {
         stage = 1
@@ -41,15 +44,15 @@ function countPoints () {
         val = value.substr(0, 1)
         siffra = parseFloat(value.substr(1, 2))
         if (siffra == highestNumber && val == "A" || siffra < highestNumber && val == "B") {
-            radio.sendString("POINT" + parseFloat(value.substr(2, value.length - -2)))
+            radio.sendString("POINT" + getSerialNumberFromPlayerData(value))
         } else {
-            radio.sendString("NOTPOINT" + parseFloat(value.substr(2, value.length - -2)))
+            radio.sendString("NOTPOINT" + getSerialNumberFromPlayerData(value))
         }
     }
 }
 function serialNumberAlreadyExistsInPlayerData (serialNumber: number) {
     for (let value of player_data) {
-        if (parseFloat(value.substr(2, value.length - 2)) == serialNumber) {
+        if (getSerialNumberFromPlayerData(value) == serialNumber) {
             return true
         }
     }
