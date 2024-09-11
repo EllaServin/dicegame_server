@@ -1,6 +1,17 @@
 input.onButtonPressed(Button.A, function () {
     player_data = []
 })
+function getHighestNumber () {
+    highestNumber = 0
+    for (let value of player_data) {
+        siffra = parseFloat(value.substr(1, 2))
+        val = value.substr(0, 1)
+        if (siffra > highestNumber) {
+            highestNumber = siffra
+        }
+    }
+    return highestNumber
+}
 radio.onReceivedString(function (receivedString) {
     if (stage == 0) {
         if (receivedString == "PLAYER" && -1 == players.indexOf(radio.receivedPacket(RadioPacketProperty.SerialNumber))) {
@@ -36,9 +47,9 @@ function serialNumberAlreadyExistsInPlayerData (serialNumber: number) {
     }
     return false
 }
-let highestNumber = 0
-let siffra = 0
 let val = ""
+let siffra = 0
+let highestNumber = 0
 let player_data: string[] = []
 let players: number[] = []
 let stage = 0
