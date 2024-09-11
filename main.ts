@@ -25,6 +25,9 @@ radio.onReceivedString(function (receivedString) {
         }
     }
 })
+function countPoints () {
+	
+}
 function serialNumberAlreadyExistsInPlayerData (serialNumber: number) {
     for (let value of player_data) {
         if (parseFloat(value.substr(2, value.length - 2)) == serialNumber) {
