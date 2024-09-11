@@ -20,16 +20,13 @@ radio.onReceivedString(function (receivedString) {
     for (let value of player_data) {
         val = value.substr(0, 1)
         siffra = parseFloat(value.substr(1, 2))
-        highestNumber = highestNumber()
+        highestNumber = 0
         if (siffra == highestNumber && val == "A" || siffra < highestNumber && val == "B") {
             radio.sendString("POINT" + parseFloat(value.substr(2, value.length - -2)))
         } else {
             radio.sendString("NOTPOINT" + parseFloat(value.substr(2, value.length - -2)))
         }
     }
-})
-input.onGesture(Gesture.Shake, function () {
-    basic.showString("lorem ipsum")
 })
 let val = ""
 let siffra = 0
