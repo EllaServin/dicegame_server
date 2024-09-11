@@ -28,6 +28,9 @@ radio.onReceivedString(function (receivedString) {
         }
     }
 })
+input.onGesture(Gesture.Shake, function () {
+    basic.showString("lorem ipsum")
+})
 let val = ""
 let siffra = 0
 let highestNumber = 0
