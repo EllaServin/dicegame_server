@@ -15,7 +15,7 @@ input.onButtonPressed(Button.A, function () {
 function getHighestNumber () {
     highestNumber = 0
     for (let value of player_data) {
-        siffra = parseFloat(value.substr(1, 2))
+        siffra = parseFloat(value.substr(1, 1))
         if (siffra > highestNumber) {
             highestNumber = siffra
         }
@@ -24,8 +24,12 @@ function getHighestNumber () {
 }
 radio.onReceivedString(function (receivedString) {
     if (stage == 0) {
-        if (receivedString == "PLAYER" && -1 == players.indexOf(radio.receivedPacket(RadioPacketProperty.SerialNumber))) {
+        serialNumber = radio.receivedPacket(RadioPacketProperty.SerialNumber)
+        if (receivedString == "PLAYER" && -1 == players.indexOf(serialNumber)) {
             players.push(radio.receivedPacket(RadioPacketProperty.SerialNumber))
+            for (let index = 0; index <= players.length - 1; index++) {
+                led.plot(index, 0)
+            }
         }
     } else if (stage == 1) {
         if (serialNumberAlreadyExistsInPlayerData(radio.receivedPacket(RadioPacketProperty.SerialNumber)) == false) {
@@ -42,7 +46,7 @@ radio.onReceivedString(function (receivedString) {
 function countPoints () {
     for (let value of player_data) {
         val = value.substr(0, 1)
-        siffra = parseFloat(value.substr(1, 2))
+        siffra = parseFloat(value.substr(1, 1))
         if (siffra == highestNumber && val == "A" || siffra < highestNumber && val == "B") {
             radio.sendString("POINT" + getSerialNumberFromPlayerData(value))
         } else {
@@ -69,10 +73,3 @@ let stage = 0
 radio.setGroup(33)
 stage = 0
 players = []
-basic.forever(function () {
-    while (stage == 0) {
-        for (let index = 0; index <= players.length - 1; index++) {
-            led.plot(index, 0)
-        }
-    }
-})
