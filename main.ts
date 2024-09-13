@@ -9,8 +9,13 @@ input.onButtonPressed(Button.A, function () {
         // skickar till spelarna att det är dags att slå tärning (behövs eventuellt inte) göras)
         radio.sendString("ROLL")
         while (numberOfPlayersInRound != player_data.length) {
-            // denna ikon visas under tiden spelarna kastar (kan med fördel bytas ut mot något roligare)
-            basic.showIcon(IconNames.SmallDiamond)
+            basic.showLeds(`
+                . . . . .
+                . . # . .
+                . . # . .
+                . . # . .
+                . . # . .
+                `)
         }
     }
 })
@@ -43,6 +48,13 @@ radio.onReceivedString(function (receivedString) {
         if (players.length == player_data.length) {
             serialNumber = getHighestNumber()
             countPoints()
+            basic.showLeds(`
+                . . . . .
+                . # # # .
+                . # . # .
+                . # . # .
+                . # # # .
+                `)
             basic.pause(2000)
             stage = 0
         }
