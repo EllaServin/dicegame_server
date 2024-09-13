@@ -6,8 +6,10 @@ input.onButtonPressed(Button.A, function () {
         stage = 1
         player_data = []
         numberOfPlayersInRound = players.length
+        // skickar till spelarna att det är dags att slå tärning (behövs eventuellt inte) göras)
         radio.sendString("ROLL")
         while (numberOfPlayersInRound != player_data.length) {
+            // denna ikon visas under tiden spelarna kastar (kan med fördel bytas ut mot något roligare)
             basic.showIcon(IconNames.SmallDiamond)
         }
     }
@@ -25,8 +27,10 @@ function getHighestNumber () {
 radio.onReceivedString(function (receivedString) {
     if (stage == 0) {
         serialNumber = radio.receivedPacket(RadioPacketProperty.SerialNumber)
+        // index -1 innebär att serienumret inte finns i listan
         if (receivedString == "PLAYER" && -1 == players.indexOf(serialNumber)) {
             players.push(radio.receivedPacket(RadioPacketProperty.SerialNumber))
+            // plottar en prick per ansluten spelare under fas 0
             for (let index = 0; index <= players.length - 1; index++) {
                 led.plot(index, 0)
             }
@@ -35,6 +39,7 @@ radio.onReceivedString(function (receivedString) {
         if (serialNumberAlreadyExistsInPlayerData(radio.receivedPacket(RadioPacketProperty.SerialNumber)) == false) {
             player_data.push("" + receivedString + radio.receivedPacket(RadioPacketProperty.SerialNumber))
         }
+        // poängräkning sker när alla spelare skickat sin siffra + val
         if (players.length == player_data.length) {
             serialNumber = getHighestNumber()
             countPoints()
@@ -71,5 +76,8 @@ let player_data: string[] = []
 let players: number[] = []
 let stage = 0
 radio.setGroup(33)
+// stage är vilken fas av spelet man är i:
+// 0 = innan tärningskast
+// 1 = under tärningskast
 stage = 0
 players = []
