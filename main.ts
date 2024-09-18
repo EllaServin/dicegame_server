@@ -2,23 +2,27 @@ function getSerialNumberFromPlayerData (playerDataValue: string) {
     return parseFloat(playerDataValue.substr(2, playerDataValue.length - -2))
 }
 input.onButtonPressed(Button.A, function () {
-    if (stage == 0 && players.length > 1) {
-        stage = 1
-        player_data = []
-        numberOfPlayersInRound = players.length
-        // skickar till spelarna att det är dags att slå tärning (behövs eventuellt inte) göras)
-        radio.sendString("ROLL")
-        while (numberOfPlayersInRound != player_data.length) {
-            basic.showLeds(`
-                . . . . .
-                . . # . .
-                . . # . .
-                . . # . .
-                . . # . .
-                `)
-        }
+    if (stage == 0 && players.length > 1 && gameStarted == false) {
+        newRound()
+        gameStarted = true
     }
 })
+function newRound () {
+    stage = 1
+    player_data = []
+    numberOfPlayersInRound = players.length
+    // skickar till spelarna att det är dags att slå tärning (behövs eventuellt inte) göras)
+    radio.sendString("ROLL")
+    while (numberOfPlayersInRound != player_data.length) {
+        basic.showLeds(`
+            . . . . .
+            . . # . .
+            . . # . .
+            . . # . .
+            . . # . .
+            `)
+    }
+}
 function getHighestNumber () {
     highestNumber = 0
     for (let value of player_data) {
@@ -46,8 +50,9 @@ radio.onReceivedString(function (receivedString) {
         }
         // poängräkning sker när alla spelare skickat sin siffra + val
         if (players.length == player_data.length) {
-            serialNumber = getHighestNumber()
+            highestNumber = getHighestNumber()
             countPoints()
+            stage = 0
             basic.showLeds(`
                 . . . . .
                 . # # # .
@@ -56,24 +61,24 @@ radio.onReceivedString(function (receivedString) {
                 . # # # .
                 `)
             basic.pause(2000)
-            stage = 0
+            newRound()
         }
     }
 })
 function countPoints () {
-    for (let value of player_data) {
-        val = value.substr(0, 1)
-        siffra = parseFloat(value.substr(1, 1))
+    for (let value2 of player_data) {
+        val = value2.substr(0, 1)
+        siffra = parseFloat(value2.substr(1, 1))
         if (siffra == highestNumber && val == "A" || siffra < highestNumber && val == "B") {
-            radio.sendString("POINT" + getSerialNumberFromPlayerData(value))
+            radio.sendString("POINT" + getSerialNumberFromPlayerData(value2))
         } else {
-            radio.sendString("NOTPOINT" + getSerialNumberFromPlayerData(value))
+            radio.sendString("NOTPOINT" + getSerialNumberFromPlayerData(value2))
         }
     }
 }
 function serialNumberAlreadyExistsInPlayerData (serialNumber: number) {
-    for (let value of player_data) {
-        if (getSerialNumberFromPlayerData(value) == serialNumber) {
+    for (let value3 of player_data) {
+        if (getSerialNumberFromPlayerData(value3) == serialNumber) {
             return true
         }
     }
@@ -87,7 +92,9 @@ let numberOfPlayersInRound = 0
 let player_data: string[] = []
 let players: number[] = []
 let stage = 0
+let gameStarted = false
 radio.setGroup(33)
+gameStarted = false
 // stage är vilken fas av spelet man är i:
 // 0 = innan tärningskast
 // 1 = under tärningskast
