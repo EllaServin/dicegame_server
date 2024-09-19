@@ -13,6 +13,7 @@ function newRound () {
     numberOfPlayersInRound = players.length
     // skickar till spelarna att det är dags att slå tärning (behövs eventuellt inte) göras)
     radio.sendString("ROLL")
+    basic.showNumber(1)
 }
 function getHighestNumber () {
     highestNumber = 0
@@ -36,25 +37,16 @@ radio.onReceivedString(function (receivedString) {
             }
         }
     } else if (stage == 1) {
-        basic.showIcon(IconNames.Butterfly)
         if (serialNumberAlreadyExistsInPlayerData(radio.receivedPacket(RadioPacketProperty.SerialNumber)) == false) {
             player_data.push("" + receivedString + radio.receivedPacket(RadioPacketProperty.SerialNumber))
-            basic.showIcon(IconNames.Angry)
         }
         // poängräkning sker när alla spelare skickat sin siffra + val
         if (players.length == player_data.length) {
-            basic.showIcon(IconNames.Fabulous)
             highestNumber = getHighestNumber()
             countPoints()
             stage = 0
-            basic.showLeds(`
-                . . . . .
-                . # # # .
-                . # . # .
-                . # . # .
-                . # # # .
-                `)
-            basic.pause(2000)
+            basic.showNumber(0)
+            basic.pause(5000)
             newRound()
         }
     }
